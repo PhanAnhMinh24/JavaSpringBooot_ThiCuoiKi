@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: kiemtracuoiki
+  datasource:
+    url: jdbc:mysql://localhost:3306/ChoXomOnlineQN?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: Minh
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        ddl_auto: update
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+    baseline-on-migrate: true
+    baseline-version: 0
+
+server:
+  port: 8083
+
+logging:
+  level:
+    org:
+    hibernate: ERROR
