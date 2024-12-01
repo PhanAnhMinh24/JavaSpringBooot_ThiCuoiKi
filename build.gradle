@@ -9,39 +9,56 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(23)
+		languageVersion = JavaLanguageVersion.of(23)  // Đảm bảo sử dụng Java 23
 	}
 }
 
 repositories {
-	mavenCentral()
+	mavenCentral()  // Đảm bảo Maven Central được khai báo để có thể tải các dependencies
 }
 
 dependencies {
+	// Các thư viện Spring Boot cần thiết
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	// Thư viện MySQL Connector cho kết nối cơ sở dữ liệu
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Thư viện kiểm thử
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// setup swagger
-//	implementation 'io.springfox:springfox-boot-starter:3.0.0'
-//	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	// Thêm Springdoc cho Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-	// setup flyway
-	// https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+	// Thêm Flyway cho việc quản lý database migrations
 	implementation 'org.flywaydb:flyway-core:9.22.3'
-	// https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
 	implementation 'org.flywaydb:flyway-mysql:9.22.3'
+
+	// Thư viện Lombok (giúp giảm boilerplate code)
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+	compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
 
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
