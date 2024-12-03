@@ -1,6 +1,8 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth;
 
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.repository.UserRepository;
@@ -51,17 +53,18 @@ public class AuthService implements IAuthService {
     // Phương thức đăng nhập
     @Override
     public String login(LoginRequest loginRequest) {
-        // Thực hiện xác thực người dùng
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-        );
+        try {
+            // Thực hiện xác thực người dùng
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+            );
 
-        if (authentication.isAuthenticated()) {
             // Nếu xác thực thành công, tạo JWT token
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return jwtUtils.generateJwtToken(userDetails.getUsername());
+            
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD);
         }
-
-        return null; // Trả về null nếu xác thực thất bại
     }
 }
