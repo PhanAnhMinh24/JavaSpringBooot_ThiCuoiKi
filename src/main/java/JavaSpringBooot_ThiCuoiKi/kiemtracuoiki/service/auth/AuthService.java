@@ -1,6 +1,8 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth;
 
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
@@ -55,22 +57,25 @@ public class AuthService implements IAuthService {
     // Phương thức đăng nhập
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
-        // Thực hiện xác thực người dùng
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-        );
+        try {  // Thực hiện xác thực người dùng
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+            );
 
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        String jwt = jwtUtils.generateToken(userPrincipal.getEmail());
+            UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+            String jwt = jwtUtils.generateToken(userPrincipal.getEmail());
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
 
-        return new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getEmail(),
-                roles);
+            return new JwtResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getEmail(),
+                    roles);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD);
+        }
     }
 }
