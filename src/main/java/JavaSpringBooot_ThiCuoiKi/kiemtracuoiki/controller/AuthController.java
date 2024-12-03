@@ -1,20 +1,22 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.controller;
 
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.ApiResult;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.MessageResponse;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.AuthService;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth.AuthService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
-
-
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.EndpointConstants;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(value = EndpointConstants.AUTH)
 public class AuthController {
     private final AuthService authService;
     private final JwtUtils jwtUtils;
@@ -24,24 +26,24 @@ public class AuthController {
         this.jwtUtils = jwtUtils;
     }
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        JwtResponse jwtResponse = authService.login(loginRequest);
+    @PostMapping(value = EndpointConstants.SIGN_IN)
+    public ResponseEntity<ApiResult<JwtResponse>> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        String token = authService.login(loginRequest);
 
-        if (jwtResponse == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid username or password!"));
+        if (token == null) {
+            throw new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD);
         }
 
-        return ResponseEntity.ok(jwtResponse);
+        return ResponseEntity.ok().body(ApiResult.success(new JwtResponse(token, loginRequest.getUsername(), "Bearer")));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
+    @PostMapping(value = EndpointConstants.SIGN_UP)
+    public ResponseEntity<ApiResult<String>> registerUser(@RequestBody SignupRequest signupRequest) {
         try {
             authService.registerUser(signupRequest);
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            return ResponseEntity.ok().body(ApiResult.success("User registered successfully!"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error during registration: " + e.getMessage()));
+            throw new AppException(ErrorCode.DURING_REGISTRATION_ERROR);
         }
     }
 
