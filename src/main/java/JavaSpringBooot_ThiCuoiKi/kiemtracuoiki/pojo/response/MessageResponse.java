@@ -1,19 +1,13 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageResponse {
-    private String message;
-
-    // Constructor
-    public MessageResponse(String message) {
-        this.message = message;
-    }
-
-    // Getter and Setter
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    String message;
 }
