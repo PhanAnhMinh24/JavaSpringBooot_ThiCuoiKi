@@ -19,6 +19,11 @@ public class AuthController {
     private final AuthService authService;
     private final JwtUtils jwtUtils;
 
+    public AuthController(AuthService authService, JwtUtils jwtUtils) {
+        this.authService = authService;
+        this.jwtUtils = jwtUtils;
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = authService.login(loginRequest);
