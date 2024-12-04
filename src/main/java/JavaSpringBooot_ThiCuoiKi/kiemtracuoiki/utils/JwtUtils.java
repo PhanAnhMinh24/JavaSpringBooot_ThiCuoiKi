@@ -1,5 +1,6 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils;
 
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth.CustomUserDetails;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,17 @@ public class JwtUtils {
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))  // Đặt thời gian hết hạn
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)  // Dùng thuật toán HS512 và key bí mật để ký token
                 .compact();  // Trả về token đã được tạo
+    }
+
+    public String generateJwtToken(CustomUserDetails userDetails) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
+        return Jwts.builder()
+                .setSubject(Long.toString(userDetails.getUser().getId()))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
     }
 
     // Validate the JWT token
@@ -53,5 +65,14 @@ public class JwtUtils {
                 .parseClaimsJws(token)  // Giải mã token
                 .getBody()  // Lấy payload (phần body)
                 .getSubject();  // Trả về username
+    }
+
+    public String getEmailFromJWT(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
     }
 }
