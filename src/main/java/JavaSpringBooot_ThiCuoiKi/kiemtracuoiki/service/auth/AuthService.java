@@ -5,15 +5,14 @@ import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.repository.UserRepository;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.address.IAddressService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.role.IRoleService;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.user.UserDetailsImpl;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
