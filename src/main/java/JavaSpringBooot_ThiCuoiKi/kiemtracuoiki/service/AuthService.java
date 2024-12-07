@@ -1,18 +1,20 @@
-package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth;
+package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service;
 
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.repository.UserRepository;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.address.IAddressService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.role.IRoleService;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.user.UserDetailsImpl;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService implements IAuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -27,16 +30,6 @@ public class AuthService implements IAuthService {
     private final AuthenticationManager authenticationManager;
     private final IRoleService roleService;
     private final IAddressService addressService;
-
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtils jwtUtils,
-                       AuthenticationManager authenticationManager, IRoleService roleService, IAddressService addressService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtils = jwtUtils;
-        this.authenticationManager = authenticationManager;
-        this.roleService = roleService;
-        this.addressService = addressService;
-    }
 
     // Phương thức đăng ký
     @Override

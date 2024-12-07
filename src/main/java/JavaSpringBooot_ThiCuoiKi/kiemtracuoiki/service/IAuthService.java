@@ -1,4 +1,4 @@
-package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth;
+package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service;
 
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
