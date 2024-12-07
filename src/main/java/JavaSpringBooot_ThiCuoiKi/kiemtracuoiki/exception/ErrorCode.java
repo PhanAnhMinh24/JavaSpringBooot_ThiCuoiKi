@@ -8,6 +8,7 @@ public enum ErrorCode {
     SYSTEM_ERROR("system-error",HttpStatus.BAD_REQUEST),
     INVALID_USERNAME_OR_PASSWORD("invalid-username-or-password",HttpStatus.BAD_REQUEST),
     DURING_REGISTRATION_ERROR("during-registration-error",HttpStatus.BAD_REQUEST),
+    EMAIL_EXIST("email-exist",HttpStatus.BAD_REQUEST),
     ;
 
     private final String message;
