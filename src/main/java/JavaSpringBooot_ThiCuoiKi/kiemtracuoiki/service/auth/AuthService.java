@@ -1,4 +1,4 @@
-package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service;
+package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth;
 
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
@@ -8,6 +8,7 @@ import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.repository.UserRepository;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.address.IAddressService;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth.IAuthService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.role.IRoleService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.user.UserDetailsImpl;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;

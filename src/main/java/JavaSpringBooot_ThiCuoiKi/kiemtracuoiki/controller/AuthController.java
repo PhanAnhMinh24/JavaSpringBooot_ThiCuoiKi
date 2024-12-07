@@ -30,8 +30,8 @@ public class AuthController {
 
     @PostMapping(value = EndpointConstants.SIGN_IN)
     public ResponseEntity<ApiResult<JwtResponse>> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        String token = authService.login(loginRequest);
-        return ResponseEntity.ok().body(ApiResult.success(new JwtResponse(token, loginRequest.getUsername(), CommonConstants.BEARER)));
+        JwtResponse jwtResponse = authService.login(loginRequest);
+        return ResponseEntity.ok().body(ApiResult.success(jwtResponse));
     }
 
     @PostMapping(value = EndpointConstants.SIGN_UP)
