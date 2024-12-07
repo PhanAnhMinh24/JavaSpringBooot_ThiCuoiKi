@@ -6,8 +6,9 @@ import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.ApiResult;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.IAuthService;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth.IAuthService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.CommonConstants;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.EndpointConstants;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.MessageConstants;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class AuthController {
 
     @PostMapping(value = EndpointConstants.SIGN_IN)
     public ResponseEntity<ApiResult<JwtResponse>> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        JwtResponse jwtResponse = authService.login(loginRequest);
-        return ResponseEntity.ok().body(ApiResult.success(jwtResponse));
+        String token = authService.login(loginRequest);
+        return ResponseEntity.ok().body(ApiResult.success(new JwtResponse(token, loginRequest.getUsername(), CommonConstants.BEARER)));
     }
 
     @PostMapping(value = EndpointConstants.SIGN_UP)
