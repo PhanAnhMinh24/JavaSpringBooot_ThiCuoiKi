@@ -6,12 +6,12 @@ import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.MessageResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.AuthService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
-
-
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,13 +25,13 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        String token = authService.login(loginRequest);
+        JwtResponse jwtResponse = authService.login(loginRequest);
 
-        if (token == null) {
+        if (jwtResponse == null) {
             return ResponseEntity.badRequest().body(new MessageResponse("Invalid username or password!"));
         }
 
-        return ResponseEntity.ok(new JwtResponse(token, loginRequest.getUsername(), "Bearer"));
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/signup")

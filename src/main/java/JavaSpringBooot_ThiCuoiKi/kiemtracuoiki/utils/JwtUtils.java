@@ -1,10 +1,15 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
@@ -16,24 +21,41 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     // Generate JWT token from username
-    public String generateJwtToken(String username) {
+    private String buildToken(Map<String, Object> extraClaims, String username) {
         return Jwts.builder()
+                .setClaims(extraClaims)
                 .setSubject(username)  // Đặt username làm subject
                 .setIssuedAt(new Date())  // Đặt thời gian phát hành token
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))  // Đặt thời gian hết hạn
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)  // Dùng thuật toán HS512 và key bí mật để ký token
+                .signWith(key(), SignatureAlgorithm.HS256)  // Dùng thuật toán HS512 và key bí mật để ký token
                 .compact();  // Trả về token đã được tạo
+    }
+
+    public String generateToken(String username) {
+        return buildToken(new HashMap<>(), username);
+    }
+
+    private Key key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     // Validate the JWT token
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser()  // Sử dụng parser() thay vì parserBuilder()
+            Jwts.parserBuilder()  // Sử dụng parser() thay vì parserBuilder()
                     .setSigningKey(jwtSecret)  // Đặt key bí mật để xác thực token
+                    .build()
                     .parseClaimsJws(authToken);  // Kiểm tra xem token có hợp lệ không
             return true;
-        } catch (SignatureException e) {
-            System.out.println("Invalid JWT signature: " + e.getMessage());
         } catch (MalformedJwtException e) {
             System.out.println("Invalid JWT token: " + e.getMessage());
         } catch (ExpiredJwtException e) {
@@ -48,8 +70,9 @@ public class JwtUtils {
 
     // Get the username from JWT token
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser()  // Sử dụng parser() thay vì parserBuilder()
+        return Jwts.parserBuilder()  // Sử dụng parser() thay vì parserBuilder()
                 .setSigningKey(jwtSecret)  // Đặt key bí mật để xác thực token
+                .build()
                 .parseClaimsJws(token)  // Giải mã token
                 .getBody()  // Lấy payload (phần body)
                 .getSubject();  // Trả về username
