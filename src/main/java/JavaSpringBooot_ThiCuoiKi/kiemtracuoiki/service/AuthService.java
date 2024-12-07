@@ -3,16 +3,20 @@ package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.entity.User;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.repository.UserRepository;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.address.IAddressService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.role.IRoleService;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.user.UserDetailsImpl;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService implements IAuthService {
@@ -50,18 +54,23 @@ public class AuthService implements IAuthService {
 
     // Phương thức đăng nhập
     @Override
-    public String login(LoginRequest loginRequest) {
+    public JwtResponse login(LoginRequest loginRequest) {
         // Thực hiện xác thực người dùng
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
 
-        if (authentication.isAuthenticated()) {
-            // Nếu xác thực thành công, tạo JWT token
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            return jwtUtils.generateJwtToken(userDetails.getUsername());
-        }
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        String jwt = jwtUtils.generateToken(userPrincipal.getEmail());
 
-        return null; // Trả về null nếu xác thực thất bại
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        return new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getEmail(),
+                roles);
     }
 }
