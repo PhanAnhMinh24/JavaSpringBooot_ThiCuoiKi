@@ -8,7 +8,6 @@ import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.repository.UserRepository;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.address.IAddressService;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth.IAuthService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.role.IRoleService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.user.UserDetailsImpl;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
@@ -35,6 +34,9 @@ public class AuthService implements IAuthService {
     // Phương thức đăng ký
     @Override
     public User registerUser(SignupRequest signupRequest) {
+        if (existEmail(signupRequest.getEmail())) {
+            throw new AppException(ErrorCode.EMAIL_EXIST);
+        }
         User user = User.builder()
                 .email(signupRequest.getEmail())
                 .username(signupRequest.getUsername())
@@ -47,10 +49,15 @@ public class AuthService implements IAuthService {
         return userSave;
     }
 
+    private boolean existEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     // Phương thức đăng nhập
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
-        try {  // Thực hiện xác thực người dùng
+        try {
+            // Thực hiện xác thực người dùng
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );

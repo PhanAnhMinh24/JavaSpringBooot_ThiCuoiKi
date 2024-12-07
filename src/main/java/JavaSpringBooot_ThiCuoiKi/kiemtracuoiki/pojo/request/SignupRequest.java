@@ -16,5 +16,4 @@ public class SignupRequest {
     String phoneNumber;
     String address;
     String profileImage;
-    String roleId;
 }

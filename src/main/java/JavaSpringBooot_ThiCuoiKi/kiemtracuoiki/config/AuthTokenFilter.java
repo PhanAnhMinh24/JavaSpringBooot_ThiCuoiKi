@@ -65,7 +65,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         // List of endpoints to ignore JWT filter logic
         return !(
-                path.startsWith("/api/auth") || path.startsWith("/swagger")
+                path.startsWith("/api/auth")
         );
     }
 }
