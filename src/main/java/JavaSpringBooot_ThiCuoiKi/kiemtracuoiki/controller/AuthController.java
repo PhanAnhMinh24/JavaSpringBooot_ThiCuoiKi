@@ -1,12 +1,16 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.controller;
 
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.ApiResult;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.LoginRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.request.SignupRequest;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.JwtResponse;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.pojo.response.MessageResponse;
-import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.AuthService;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.auth.IAuthService;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.CommonConstants;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.EndpointConstants;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.MessageConstants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,33 +18,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(value = EndpointConstants.AUTH)
 public class AuthController {
+    private final IAuthService authService;
+    private final JwtUtils jwtUtils;
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        JwtResponse jwtResponse = authService.login(loginRequest);
-
-        if (jwtResponse == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid username or password!"));
-        }
-
-        return ResponseEntity.ok(jwtResponse);
+    public AuthController(IAuthService authService, JwtUtils jwtUtils) {
+        this.authService = authService;
+        this.jwtUtils = jwtUtils;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
+    @PostMapping(value = EndpointConstants.SIGN_IN)
+    public ResponseEntity<ApiResult<JwtResponse>> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        JwtResponse jwtResponse = authService.login(loginRequest);
+        return ResponseEntity.ok().body(ApiResult.success(jwtResponse));
+    }
+
+    @PostMapping(value = EndpointConstants.SIGN_UP)
+    public ResponseEntity<ApiResult<String>> registerUser(@RequestBody SignupRequest signupRequest) {
         try {
             authService.registerUser(signupRequest);
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            return ResponseEntity.ok().body(ApiResult.success(MessageConstants.USER_REGISTERED_SUCCESSFULLY));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error during registration: " + e.getMessage()));
+            throw new AppException(ErrorCode.DURING_REGISTRATION_ERROR);
         }
     }
 
