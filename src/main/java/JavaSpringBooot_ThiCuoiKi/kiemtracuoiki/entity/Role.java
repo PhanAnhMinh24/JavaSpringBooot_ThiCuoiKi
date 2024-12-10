@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -22,8 +24,8 @@ public class Role extends BaseTimeEntity {
     private String description;
 
     @Column(name = "is_default")
-    Boolean isDefault;
+    private Boolean isDefault;
 
-    @OneToOne(mappedBy = "role")
-    private User user;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    private List<User> users;
 }

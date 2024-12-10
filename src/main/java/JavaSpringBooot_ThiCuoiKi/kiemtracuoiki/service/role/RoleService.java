@@ -14,6 +14,8 @@ public class RoleService implements IRoleService {
 
     @Override
     public Role getRoleDefault() {
-        return roleRepository.findByIsDefaultTrue();
+        return roleRepository.findAll().stream()
+                .filter(Role::getIsDefault)
+                .findFirst().orElse(null);
     }
 }

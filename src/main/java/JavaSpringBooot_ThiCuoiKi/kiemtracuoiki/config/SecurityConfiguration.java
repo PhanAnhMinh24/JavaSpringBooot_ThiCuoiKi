@@ -29,17 +29,18 @@ import java.util.Arrays;
 public class SecurityConfiguration {
     @Autowired
     private UserDetailsService userDetailsService;
-//    private final AuthEntryPointJwt unauthorizedHandler;
+
     private final String[] WHITE_LIST = {
+            "/**",
+            "/v3/api-docs",
             "/v3/api-docs/**",
-            "/v2/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/configuration/ui",
+            "/swagger-resources",
             "/swagger-resources/**",
+            "/configuration/ui",
             "/configuration/security",
+            "/swagger-ui/**",
             "/webjars/**",
-            "/**"
+            "/swagger-ui.html"
     };
 
     @Bean

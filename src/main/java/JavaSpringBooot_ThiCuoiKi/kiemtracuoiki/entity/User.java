@@ -20,8 +20,6 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     Long id;
 
-    String username;
-
     String password;
 
     String email;
@@ -38,7 +36,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "profile_image")
     String profileImage;
 
-    @OneToOne
-    @JoinColumn(name = "role_id")
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
     Role role;
 }

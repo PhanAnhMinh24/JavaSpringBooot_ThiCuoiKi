@@ -33,6 +33,6 @@ logging:
     org.hibernate: ERROR
 
 app:
-  jwtSecret: D5u2ATbRce
+  jwtSecret: bXlTZXJldEtleUxvbmclw6qI8TKZ9WXzH+OaD4jRge7xVtkA7tSy75cFDi5Jw==
   jwtExpirationMs: 604800000
 

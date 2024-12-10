@@ -39,7 +39,6 @@ public class AuthService implements IAuthService {
         }
         User user = User.builder()
                 .email(signupRequest.getEmail())
-                .username(signupRequest.getUsername())
                 .password(passwordEncoder.encode(signupRequest.getPassword())) // Mã hóa mật khẩu
                 .fullName(signupRequest.getFullName())
                 .role(roleService.getRoleDefault())
