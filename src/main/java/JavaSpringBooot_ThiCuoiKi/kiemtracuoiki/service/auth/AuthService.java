@@ -62,7 +62,7 @@ public class AuthService implements IAuthService {
             );
 
             UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-            String jwt = jwtUtils.generateToken(userPrincipal.getEmail());
+            String jwt = jwtUtils.generateToken(userPrincipal.getUsername());
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream()
@@ -71,7 +71,7 @@ public class AuthService implements IAuthService {
 
             return new JwtResponse(jwt,
                     userDetails.getId(),
-                    userDetails.getEmail(),
+                    userDetails.getUsername(),
                     roles);
         } catch (Exception e) {
             throw new AppException(ErrorCode.INVALID_USERNAME_OR_PASSWORD);
