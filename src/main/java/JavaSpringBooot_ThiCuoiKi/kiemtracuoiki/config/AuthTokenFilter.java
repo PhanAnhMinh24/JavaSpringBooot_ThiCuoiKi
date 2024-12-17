@@ -1,7 +1,12 @@
 package JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.config;
 
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.AppException;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.exception.ErrorCode;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.service.user.UserDetailsServiceImpl;
 import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.JwtUtils;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.CommonConstants;
+import JavaSpringBooot_ThiCuoiKi.kiemtracuoiki.utils.constants.EndpointConstants;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,24 +17,32 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Log4j2
+@Component
 public class AuthTokenFilter extends OncePerRequestFilter {
+    private final ObjectMapper objectMapper;
     private final JwtUtils jwtUtils;
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            if (shouldFilterJwt(request)) {
+            if (!shouldFilterJwt(request)) {
                 String jwt = parseJwt(request);
-                if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                if (org.apache.commons.lang3.StringUtils.isBlank(jwt)) {
+                    setErrorMessage(response, new AppException(ErrorCode.UNAUTHORIZED));
+                    return;
+                }
+                if (jwtUtils.validateJwtToken(jwt)) {
                     String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -43,11 +56,22 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        } catch (Exception e) {
+        } catch (AppException e) {
             logger.error("Cannot set user authentication: {}", e);
+            setErrorMessage(response, e);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void setErrorMessage(HttpServletResponse response, AppException e) throws IOException {
+        response.setStatus(e.getErrorCode().getStatus().value());
+        response.getWriter().write(objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(Map.of(
+                        CommonConstants.MESSAGE, e.getErrorCode().getMessage(),
+                        CommonConstants.STATUS, e.getErrorCode().getStatus()
+                )));
+        response.setHeader(CommonConstants.CONTENT_TYPE, CommonConstants.APPLICATION_JSON_UTF8);
     }
 
     private String parseJwt(HttpServletRequest request) {
@@ -61,11 +85,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldFilterJwt(HttpServletRequest request) {
-        String path = request.getRequestURI();
+        String path = request.getServletPath();
+
+        String signIn = EndpointConstants.AUTH + EndpointConstants.SIGN_IN;
+        String signUp = EndpointConstants.AUTH + EndpointConstants.SIGN_UP;
 
         // List of endpoints to ignore JWT filter logic
-        return !(
-                path.startsWith("/api/auth")
-        );
+        return signIn.equals(path) || signUp.equals(path);
     }
 }
